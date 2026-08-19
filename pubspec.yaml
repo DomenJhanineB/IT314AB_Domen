@@ -10,12 +10,13 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about Android versioning at
+# https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-# In Windows, build-name is used as the major, minor, and patch parts
-# of the product and file versions while build-number is used as the build suffix.
+# In Windows, build-name is used as the major, minor, and patch parts of the
+# product and file versions while build-number is used as the build suffix.
 version: 1.0.0+1
 
 environment:
@@ -39,11 +40,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
+  # The "flutter_lints" package below contains a set of recommended lint rules
+  # to encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your package.
   flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
@@ -57,22 +56,21 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  # Register the images folder as an asset folder.
+  assets:
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
-  # For details regarding adding assets from package dependencies, see
+  # For details regarding adding assets from package dependencies, see:
   # https://flutter.dev/to/asset-from-package
 
   # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
+  # in this "flutter" section. Each entry in this list must have a
   # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
+  # list giving the asset and other descriptors for the font.
+  # For example:
   # fonts:
   #   - family: Schyler
   #     fonts:
@@ -85,5 +83,5 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/to/font-from-package
+  # For details regarding fonts from package dependencies, see:
+  # https://flutter.dev/to/font-from-package
