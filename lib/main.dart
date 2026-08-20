@@ -5,18 +5,26 @@ void main() {
 }
 
 class Profile {
-  final String? image;
-  final String? name;
-  final String? courseSection;
-  final int? age;
-  final String? hobby;
+  final String image;
+  final String name;
+  final String course;
+  final String yearLevel;
+  final int age;
+  final String hobby;
+  final String studentId;
+  final String email;
+  final String favoriteSubject;
 
   const Profile({
-    this.image,
-    this.name,
-    this.courseSection,
-    this.age,
-    this.hobby,
+    required this.image,
+    required this.name,
+    required this.course,
+    required this.yearLevel,
+    required this.age,
+    required this.hobby,
+    required this.studentId,
+    required this.email,
+    required this.favoriteSubject,
   });
 }
 
@@ -24,41 +32,73 @@ final List<Profile> profiles = [
   Profile(
     image: 'assets/images/Profile Image 1.png',
     name: 'Jhanine Domen',
-    courseSection: 'BSIT-3',
+    course: 'BSIT',
+    yearLevel: '3rd Year',
     age: 20,
     hobby: 'Doing Makeups',
+    studentId: '2001-001',
+    email: 'jhaninedomen20@gmail.com',
+    favoriteSubject: 'Programming',
   ),
 
   Profile(
     image: 'assets/images/Profile Image 2.png',
     name: 'Karol Rphael Pal',
-    courseSection: 'BSIT-3',
+    course: 'BSIT',
+    yearLevel: '3rd Year',
     age: 21,
     hobby: 'Playing Mobile Legends',
+    studentId: '2002-002',
+    email: 'karolrapaelpal21@gmail.com',
+    favoriteSubject: 'Database',
   ),
 
   Profile(
     image: 'assets/images/Profile Image 3.png',
     name: 'Jan Liebert Tabares',
-    courseSection: 'BTVETD-2',
+    course: 'BTVTED',
+    yearLevel: '2nd Year',
     age: 20,
-    hobby: null,
+    hobby: 'Playing Basketball',
+    studentId: '2003-003',
+    email: 'janlieberttabares20@gmail.com',
+    favoriteSubject: 'Machine Shop and Benchwork',
   ),
 
   Profile(
     image: 'assets/images/Profile Image 4.png',
     name: 'Vanneza Jane Domen',
-    courseSection: null,
+    course: 'BEED',
+    yearLevel: '1st Year',
     age: 18,
     hobby: 'Dancing',
+    studentId: '2004  -004',
+    email: 'vannezajanedomen18@gmail.com',
+    favoriteSubject: 'Teaching in the Learning Area of English',
   ),
 
   Profile(
     image: 'assets/images/Profile Image 5.png',
-    name: null,
-    courseSection: 'Review for LPT',
+    name: 'Renei Mae Domen',
+    course: 'BEED',
+    yearLevel: '4th Year',
     age: 22,
     hobby: 'Watching Movies',
+    studentId: '2005-005',
+    email: 'reneimaedomen@gmail.com',
+    favoriteSubject: 'English',
+  ),
+
+  Profile(
+    image: 'assets/images/Profile Image 6.png',
+    name: 'Caroline Villanueva',
+    course: 'BIT',
+    yearLevel: '3rd Year',
+    age: 20,
+    hobby: 'Playing Guitar',
+    studentId: '2006-006',
+    email: 'carolinevillanueva20@gmail.com',
+    favoriteSubject: 'Robotics and Automation',
   ),
 ];
 
@@ -74,126 +114,187 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  void sortStudentsByName() {
+    setState(() {
+      profiles.sort((a, b) => a.name.compareTo(b.name));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flutter Capture the Flag 3: Data-Driven UI'),
+        title: const Text('Flutter Capture the Flag 4: The Student List'),
       ),
 
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
+      body: profiles.isEmpty
+          ? const EmptyStudentState()
+          : ListView(
+              padding: const EdgeInsets.all(10),
+              children: [
+                const SizedBox(height: 10),
 
-              const Text(
-                'Five Profiles',
-                style: TextStyle(
-                  fontSize: 28,
-                  color: Color.fromRGBO(67, 103, 157, 1),
-                  fontWeight: FontWeight.bold,
+                const Center(
+                  child: Text(
+                    'Student List',
+                    style: TextStyle(
+                      fontSize: 28,
+                      color: Color.fromRGBO(67, 103, 157, 1),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 20),
-              ProfileCard(profile: profiles[0]),
+                const SizedBox(height: 15),
 
-              const SizedBox(height: 20),
-              ProfileCard(profile: profiles[1]),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: ElevatedButton.icon(
+                    onPressed: sortStudentsByName,
+                    icon: const Icon(Icons.sort_by_alpha),
+                    label: const Text('Sort Students by Name'),
+                  ),
+                ),
 
-              const SizedBox(height: 20),
-              ProfileCard(profile: profiles[2]),
+                const SizedBox(height: 15),
 
-              const SizedBox(height: 20),
-              ProfileCard(profile: profiles[3]),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: profiles.length,
 
-              const SizedBox(height: 20),
-              ProfileCard(profile: profiles[4]),
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: ProfileCard(profile: profiles[index]),
+                    );
+                  },
+                ),
 
-              const SizedBox(height: 30),
+                const SizedBox(height: 10),
 
-              Card(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 15),
-
-                    const Text(
-                      'My Favorites',
-                      style: TextStyle(
-                        fontSize: 26,
-                        color: Color.fromRGBO(67, 103, 157, 1),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    const Text(
-                      'Favorite Things I Do: Make Ups',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Color.fromRGBO(67, 103, 157, 1),
-                      ),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    const Text(
-                      'Favorite Food: Ham',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Color.fromRGBO(67, 103, 157, 1),
-                      ),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    const Text(
-                      'Favorite Brand Shoes: Adidas',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Color.fromRGBO(67, 103, 157, 1),
-                      ),
-                    ),
-
-                    const SizedBox(height: 18),
-
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
                       children: [
-                        Text(
-                          'Things I Love',
+                        const Text(
+                          'My Favorites',
                           style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 26,
+                            color: Color.fromRGBO(67, 103, 157, 1),
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
 
-                        SizedBox(width: 30),
+                        const SizedBox(height: 15),
 
-                        Text(
-                          'Food',
+                        const Text(
+                          'Favorite Things I Do: Make Ups',
                           style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 18,
+                            color: Color.fromRGBO(67, 103, 157, 1),
                           ),
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        const Text(
+                          'Favorite Food: Ham',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Color.fromRGBO(67, 103, 157, 1),
+                          ),
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        const Text(
+                          'Favorite Brand Shoes: Adidas',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Color.fromRGBO(67, 103, 157, 1),
+                          ),
+                        ),
+
+                        const SizedBox(height: 18),
+
+                        const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Things I Love',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+
+                            SizedBox(width: 30),
+
+                            Text(
+                              'Food',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-
-                    const SizedBox(height: 15),
-                  ],
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 30),
-            ],
+                const SizedBox(height: 30),
+              ],
+            ),
+    );
+  }
+}
+
+class EmptyStudentState extends StatelessWidget {
+  const EmptyStudentState({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.school_outlined,
+            size: 80,
+            color: Color.fromRGBO(67, 103, 157, 1),
           ),
-        ),
+
+          SizedBox(height: 20),
+
+          Text(
+            'No students found.',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color.fromRGBO(67, 103, 157, 1),
+            ),
+          ),
+
+          SizedBox(height: 10),
+
+          Text(
+            'The student list is currently empty.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 17, color: Colors.grey),
+          ),
+        ],
       ),
     );
   }
@@ -207,22 +308,23 @@ class ProfileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 4,
       child: Padding(
         padding: const EdgeInsets.all(20),
 
         child: Column(
           children: [
-            profile.image != null
-                ? Image.asset(
-                    profile.image!,
-                    width: 150,
-                    height: 150,
-                    fit: BoxFit.cover,
-                  )
-                : const Icon(Icons.person, size: 150),
+            Image.asset(
+              profile.image,
+              width: 150,
+              height: 150,
+              fit: BoxFit.cover,
+            ),
+
+            const SizedBox(height: 10),
 
             Text(
-              profile.name ?? 'Name not provided',
+              profile.name,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 30,
@@ -234,20 +336,32 @@ class ProfileCard extends StatelessWidget {
             ),
 
             const SizedBox(height: 10),
+
             Text(
-              profile.courseSection ?? 'Course: Unknown',
+              'Course: ${profile.course}',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 22,
                 color: Color.fromRGBO(67, 103, 157, 1),
                 fontWeight: FontWeight.w600,
-                letterSpacing: 0.8,
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            Text(
+              'Year Level: ${profile.yearLevel}',
+              style: const TextStyle(
+                fontSize: 20,
+                color: Color.fromRGBO(67, 103, 157, 1),
+                fontWeight: FontWeight.w500,
               ),
             ),
 
             const SizedBox(height: 15),
+
             Text(
-              'Age: ${profile.age ?? 'Not provided'}',
+              'Age: ${profile.age}',
               style: const TextStyle(
                 fontSize: 18,
                 color: Color.fromRGBO(67, 103, 157, 1),
@@ -256,8 +370,9 @@ class ProfileCard extends StatelessWidget {
             ),
 
             const SizedBox(height: 10),
+
             Text(
-              'Hobby: ${profile.hobby ?? 'Not provided'}',
+              'Hobby: ${profile.hobby}',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 18,
@@ -266,7 +381,30 @@ class ProfileCard extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 15),
+            const Divider(height: 30),
+
+            Text(
+              'Student ID: ${profile.studentId}',
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+            ),
+
+            const SizedBox(height: 8),
+
+            Text(
+              'Email: ${profile.email}',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
+            ),
+
+            const SizedBox(height: 8),
+
+            Text(
+              'Favorite Subject: ${profile.favoriteSubject}',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
+            ),
+
+            const SizedBox(height: 10),
           ],
         ),
       ),
