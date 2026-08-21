@@ -40,7 +40,6 @@ final List<Profile> profiles = [
     email: 'jhaninedomen20@gmail.com',
     favoriteSubject: 'Programming',
   ),
-
   Profile(
     image: 'assets/images/Profile Image 2.png',
     name: 'Karol Rphael Pal',
@@ -52,7 +51,6 @@ final List<Profile> profiles = [
     email: 'karolrapaelpal21@gmail.com',
     favoriteSubject: 'Database',
   ),
-
   Profile(
     image: 'assets/images/Profile Image 3.png',
     name: 'Jan Liebert Tabares',
@@ -64,7 +62,6 @@ final List<Profile> profiles = [
     email: 'janlieberttabares20@gmail.com',
     favoriteSubject: 'Machine Shop and Benchwork',
   ),
-
   Profile(
     image: 'assets/images/Profile Image 4.png',
     name: 'Vanneza Jane Domen',
@@ -76,7 +73,6 @@ final List<Profile> profiles = [
     email: 'vannezajanedomen18@gmail.com',
     favoriteSubject: 'Teaching in the Learning Area of English',
   ),
-
   Profile(
     image: 'assets/images/Profile Image 5.png',
     name: 'Renei Mae Domen',
@@ -88,7 +84,6 @@ final List<Profile> profiles = [
     email: 'reneimaedomen@gmail.com',
     favoriteSubject: 'English',
   ),
-
   Profile(
     image: 'assets/images/Profile Image 6.png',
     name: 'Caroline Villanueva',
@@ -128,11 +123,17 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void deleteStudent(Profile profile) {
+    setState(() {
+      profiles.remove(profile);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flutter Capture the Flag 4: The Student List'),
+        title: const Text('Flutter Capture the Flag 5: Student Interactions'),
       ),
 
       body: profiles.isEmpty
@@ -170,11 +171,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: profiles.length,
-
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 20),
-                      child: ProfileCard(profile: profiles[index]),
+                      child: ProfileCard(
+                        profile: profiles[index],
+                        onDelete: deleteStudent,
+                      ),
                     );
                   },
                 ),
@@ -300,112 +303,222 @@ class EmptyStudentState extends StatelessWidget {
   }
 }
 
-class ProfileCard extends StatelessWidget {
+class ProfileCard extends StatefulWidget {
   final Profile profile;
+  final Function(Profile) onDelete;
 
-  const ProfileCard({super.key, required this.profile});
+  const ProfileCard({super.key, required this.profile, required this.onDelete});
+
+  @override
+  State<ProfileCard> createState() => _ProfileCardState();
+}
+
+class _ProfileCardState extends State<ProfileCard> {
+  bool isFavorite = false;
+
+  void showEditDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Edit Student'),
+
+          content: Text('Edit action triggered for ${widget.profile.name}.'),
+
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+    return GestureDetector(
+      onTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${widget.profile.name} card tapped.')),
+        );
+      },
 
-        child: Column(
-          children: [
-            Image.asset(
-              profile.image,
-              width: 150,
-              height: 150,
-              fit: BoxFit.cover,
-            ),
+      child: Card(
+        elevation: isFavorite ? 8 : 4,
 
-            const SizedBox(height: 10),
+        color: isFavorite ? Colors.amber.shade50 : Colors.white,
 
-            Text(
-              profile.name,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 30,
-                color: Color.fromRGBO(67, 103, 157, 1),
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
-                shadows: [Shadow(blurRadius: 3, offset: Offset(1, 1))],
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+
+          child: Column(
+            children: [
+              Image.asset(
+                widget.profile.image,
+                width: 150,
+                height: 150,
+                fit: BoxFit.cover,
               ),
-            ),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-            Text(
-              'Course: ${profile.course}',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 22,
-                color: Color.fromRGBO(67, 103, 157, 1),
-                fontWeight: FontWeight.w600,
+              Text(
+                widget.profile.name,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 30,
+                  color: Color.fromRGBO(67, 103, 157, 1),
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                  shadows: [Shadow(blurRadius: 3, offset: Offset(1, 1))],
+                ),
               ),
-            ),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-            Text(
-              'Year Level: ${profile.yearLevel}',
-              style: const TextStyle(
-                fontSize: 20,
-                color: Color.fromRGBO(67, 103, 157, 1),
-                fontWeight: FontWeight.w500,
+              Text(
+                'Course: ${widget.profile.course}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 22,
+                  color: Color.fromRGBO(67, 103, 157, 1),
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
 
-            const SizedBox(height: 15),
+              const SizedBox(height: 10),
 
-            Text(
-              'Age: ${profile.age}',
-              style: const TextStyle(
-                fontSize: 18,
-                color: Color.fromRGBO(67, 103, 157, 1),
-                fontWeight: FontWeight.w500,
+              Text(
+                'Year Level: ${widget.profile.yearLevel}',
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Color.fromRGBO(67, 103, 157, 1),
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 15),
 
-            Text(
-              'Hobby: ${profile.hobby}',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 18,
-                color: Color.fromRGBO(67, 103, 157, 1),
-                fontWeight: FontWeight.w500,
+              Text(
+                'Age: ${widget.profile.age}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: Color.fromRGBO(67, 103, 157, 1),
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
 
-            const Divider(height: 30),
+              const SizedBox(height: 10),
 
-            Text(
-              'Student ID: ${profile.studentId}',
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-            ),
+              Text(
+                'Hobby: ${widget.profile.hobby}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: Color.fromRGBO(67, 103, 157, 1),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
 
-            const SizedBox(height: 8),
+              const Divider(height: 30),
 
-            Text(
-              'Email: ${profile.email}',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
-            ),
+              Text(
+                'Student ID: ${widget.profile.studentId}',
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
 
-            const SizedBox(height: 8),
+              const SizedBox(height: 8),
 
-            Text(
-              'Favorite Subject: ${profile.favoriteSubject}',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
-            ),
+              Text(
+                'Email: ${widget.profile.email}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
 
-            const SizedBox(height: 10),
-          ],
+              const SizedBox(height: 8),
+
+              Text(
+                'Favorite Subject: ${widget.profile.favoriteSubject}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+
+              const SizedBox(height: 15),
+
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        isFavorite = !isFavorite;
+                      });
+                    },
+
+                    icon: Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                    ),
+
+                    label: Text(isFavorite ? 'Favorited' : 'Favorite'),
+                  ),
+
+                  ElevatedButton.icon(
+                    onPressed: showEditDialog,
+
+                    icon: const Icon(Icons.edit),
+
+                    label: const Text('Edit'),
+                  ),
+
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      widget.onDelete(widget.profile);
+                    },
+
+                    icon: const Icon(Icons.delete),
+
+                    label: const Text('Delete'),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 10),
+
+              if (isFavorite)
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.star, size: 20),
+
+                    SizedBox(width: 5),
+
+                    Text(
+                      'Favorite Student',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
         ),
       ),
     );
