@@ -1,446 +1,296 @@
 import 'package:flutter/material.dart';
+import 'chat_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-String friend1 = 'MissYouLikeKrazy';
-String friend2 = 'bread';
-String friend3 = 'The14th';
-String friend4 = 'Carlvendish';
-String friend5 = 'D1yah';
-
-String status1 = 'Online - VALORANT';
-String status2 = 'Online - VALORANT';
-String status3 = 'Online - VALORANT';
-String status4 = 'Away - Riot Mobile';
-String status5 = 'Away - Riot Mobile';
-
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
+    return MaterialApp(debugShowCheckedModeBanner: false, home: SocialPage());
+  }
+}
 
-      home: Scaffold(
-        backgroundColor: const Color(0xFF0F0B0C),
+List<String> names = [
+  'MissYouLikeKrazy',
+  'bread',
+  'The14th',
+  'Carlvendish',
+  'D1yah',
+];
 
-        appBar: AppBar(
-          backgroundColor: const Color(0xFF0F0B0C),
+List<String> statuses = [
+  'Online - VALORANT',
+  'Playing - VALORANT',
+  'Playing - VALORANT',
+  'Away - Riot Mobile',
+  'Away - Riot Mobile',
+];
 
-          title: const Text(
-            'Social',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
+List<bool> online = [true, true, true, false, false];
 
-        body: SingleChildScrollView(
+List<bool> pc = [true, true, true, false, false];
+
+class SocialPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFF0F0B0C),
+
+      body: SafeArea(
+        child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                height: 55,
-
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: Color(0xFF302A2C), width: 1),
+              Padding(
+                padding: EdgeInsets.only(left: 20, top: 10),
+                child: Text(
+                  'Social',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
+              ),
 
+              SizedBox(height: 15),
+
+              Padding(
+                padding: EdgeInsets.only(left: 20),
                 child: Row(
                   children: [
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.center,
-
-                        child: const Text(
-                          'Friends',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                    Text(
+                      'Friends',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
 
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.center,
+                    SizedBox(width: 35),
 
-                        child: const Text(
-                          'Messages',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
+                    Text('Messages', style: TextStyle(color: Colors.grey)),
 
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.center,
+                    SizedBox(width: 35),
 
-                        child: const Text(
-                          'Socials',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
+                    Text('Requests', style: TextStyle(color: Colors.grey)),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
 
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                  vertical: 12,
-                ),
+                margin: EdgeInsets.symmetric(horizontal: 15),
+                padding: EdgeInsets.all(12),
 
                 decoration: BoxDecoration(
-                  color: const Color(0xFF302A2C),
-                  borderRadius: BorderRadius.circular(10),
+                  color: Color(0xFF302A2C),
+                  borderRadius: BorderRadius.circular(12),
                 ),
 
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(Icons.search, color: Colors.white, size: 25),
-
-                    SizedBox(width: 15),
-
-                    Text(
-                      'Search',
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              Container(
-                width: double.infinity,
-
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-
-                child: const Row(
-                  children: [
-                    Text(
-                      'Valorant',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    Icon(Icons.search, color: Colors.white),
 
                     SizedBox(width: 10),
 
-                    Text(
-                      '3',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    Text('Search', style: TextStyle(color: Colors.grey)),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 20),
+
+              Padding(
+                padding: EdgeInsets.only(left: 25),
+                child: Text(
+                  'VALORANT 3',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 5),
+
+              ListView.builder(
+                itemCount: 3,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+
+                itemBuilder: (context, index) {
+                  String playerName = names[index];
+
+                  if (playerName.isEmpty) {
+                    playerName = 'Unknown User';
+                  }
+
+                  String playerStatus = statuses[index];
+
+                  if (playerStatus.isEmpty) {
+                    playerStatus = 'No status available';
+                  }
+
+                  return ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return ChatScreen(
+                              name: playerName,
+                              status: playerStatus,
+                              online: online[index],
+                            );
+                          },
+                        ),
+                      );
+                    },
+
+                    contentPadding: EdgeInsets.symmetric(horizontal: 20),
+
+                    leading: CircleAvatar(
+                      radius: 27,
+                      backgroundColor: Color(0xFF302A2C),
+
+                      child: Icon(
+                        Icons.person,
+                        color: online[index] ? Colors.red : Colors.white,
+                        size: 30,
                       ),
                     ),
-                  ],
-                ),
-              ),
 
-              Container(
-                width: double.infinity,
-
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-
-                padding: const EdgeInsets.all(12),
-
-                color: const Color(0xFF1C181A),
-
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 27,
-                      backgroundColor: Colors.white,
-
-                      child: Icon(Icons.person, color: Colors.red, size: 30),
-                    ),
-
-                    const SizedBox(width: 15),
-
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-
-                      children: [
-                        Text(
-                          friend1,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-
-                        const SizedBox(height: 4),
-
-                        Text(
-                          status1,
-                          style: const TextStyle(
-                            color: Colors.green,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              Container(
-                width: double.infinity,
-
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-
-                padding: const EdgeInsets.all(12),
-
-                color: const Color(0xFF1C181A),
-
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 27,
-                      backgroundColor: Colors.white,
-
-                      child: Icon(Icons.person, color: Colors.red, size: 30),
-                    ),
-
-                    const SizedBox(width: 15),
-
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-
-                      children: [
-                        Text(
-                          friend2,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-
-                        const SizedBox(height: 4),
-
-                        Text(
-                          status2,
-                          style: const TextStyle(
-                            color: Colors.green,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              Container(
-                width: double.infinity,
-
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-
-                padding: const EdgeInsets.all(12),
-
-                color: const Color(0xFF1C181A),
-
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 27,
-                      backgroundColor: Colors.white,
-
-                      child: Icon(Icons.person, color: Colors.red, size: 30),
-                    ),
-
-                    const SizedBox(width: 15),
-
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-
-                      children: [
-                        Text(
-                          friend3,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-
-                        const SizedBox(height: 4),
-
-                        Text(
-                          status3,
-                          style: const TextStyle(
-                            color: Colors.green,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              Container(
-                width: double.infinity,
-
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-
-                child: const Row(
-                  children: [
-                    Text(
-                      'Riot Mobile',
+                    title: Text(
+                      playerName,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
 
-                    SizedBox(width: 10),
+                    subtitle: Row(
+                      children: [
+                        Icon(
+                          pc[index]
+                              ? Icons.desktop_windows
+                              : Icons.phone_android,
 
-                    Text(
-                      '2',
+                          color: Colors.grey,
+                          size: 15,
+                        ),
+
+                        SizedBox(width: 5),
+
+                        Text(
+                          playerStatus,
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+
+              SizedBox(height: 10),
+
+              Padding(
+                padding: EdgeInsets.only(left: 25),
+                child: Text(
+                  'Online 4',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 5),
+
+              ListView.builder(
+                itemCount: 2,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+
+                itemBuilder: (context, index) {
+                  int number = index + 3;
+
+                  String playerName = names[number];
+
+                  if (playerName.isEmpty) {
+                    playerName = 'Unknown User';
+                  }
+
+                  String playerStatus = statuses[number];
+
+                  if (playerStatus.isEmpty) {
+                    playerStatus = 'No status available';
+                  }
+
+                  return ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return ChatScreen(
+                              name: playerName,
+                              status: playerStatus,
+                              online: online[number],
+                            );
+                          },
+                        ),
+                      );
+                    },
+
+                    contentPadding: EdgeInsets.symmetric(horizontal: 20),
+
+                    leading: CircleAvatar(
+                      radius: 27,
+                      backgroundColor: Color(0xFF302A2C),
+
+                      child: Icon(
+                        Icons.person,
+                        color: online[number] ? Colors.red : Colors.white,
+                        size: 30,
+                      ),
+                    ),
+
+                    title: Text(
+                      playerName,
                       style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
-                ),
-              ),
 
-              Container(
-                width: double.infinity,
-
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-
-                padding: const EdgeInsets.all(12),
-
-                color: const Color(0xFF1C181A),
-
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 27,
-                      backgroundColor: Colors.white,
-
-                      child: Icon(Icons.person, color: Colors.red, size: 30),
-                    ),
-
-                    const SizedBox(width: 15),
-
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-
+                    subtitle: Row(
                       children: [
-                        Text(
-                          friend4,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Icon(
+                          pc[number]
+                              ? Icons.desktop_windows
+                              : Icons.phone_android,
+
+                          color: Colors.grey,
+                          size: 15,
                         ),
 
-                        const SizedBox(height: 4),
+                        SizedBox(width: 5),
 
                         Text(
-                          status4,
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 13,
-                          ),
+                          playerStatus,
+                          style: TextStyle(color: Colors.grey),
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
 
-              Container(
-                width: double.infinity,
-
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-
-                padding: const EdgeInsets.all(12),
-
-                color: const Color(0xFF1C181A),
-
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 27,
-                      backgroundColor: Colors.white,
-
-                      child: Icon(Icons.person, color: Colors.red, size: 30),
-                    ),
-
-                    const SizedBox(width: 15),
-
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-
-                      children: [
-                        Text(
-                          friend5,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-
-                        const SizedBox(height: 4),
-
-                        Text(
-                          status5,
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
             ],
           ),
         ),

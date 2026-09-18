@@ -3,55 +3,84 @@ import 'package:flutter/material.dart';
 class ChatScreen extends StatelessWidget {
   final String name;
   final String status;
+  final bool online;
 
-  const ChatScreen({super.key, required this.name, required this.status});
+  ChatScreen({required this.name, required this.status, required this.online});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0B0C),
+      backgroundColor: Color(0xFF0F0B0C),
 
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F0B0C),
+        backgroundColor: Color(0xFF0F0B0C),
 
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: Colors.white),
 
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        title: Row(
           children: [
-            Text(
-              name,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+            CircleAvatar(
+              radius: 18,
+              backgroundColor: Color(0xFF302A2C),
+
+              child: Icon(
+                Icons.person,
+                color: online ? Colors.red : Colors.white,
               ),
             ),
 
-            Text(
-              status,
-              style: const TextStyle(color: Colors.grey, fontSize: 12),
+            SizedBox(width: 10),
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name.isEmpty ? 'Unknown User' : name,
+
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                Text(
+                  status.isEmpty ? 'No status available' : status,
+
+                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+              ],
             ),
           ],
         ),
+
+        actions: [
+          Icon(Icons.more_horiz, color: Colors.white),
+
+          SizedBox(width: 15),
+        ],
       ),
 
       body: Column(
         children: [
-          const Expanded(child: SizedBox()),
+          Expanded(child: SizedBox()),
 
           Padding(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(10),
 
             child: TextField(
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.white),
 
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Send a message',
-                hintStyle: TextStyle(color: Colors.white),
+
+                hintStyle: TextStyle(color: Colors.grey),
 
                 filled: true,
+
                 fillColor: Color(0xFF302A2C),
+
+                suffixIcon: Icon(Icons.send, color: Colors.grey),
 
                 border: InputBorder.none,
               ),
