@@ -18,6 +18,7 @@ jobs:
           cache: true
 
       - name: Build Flutter Web
+        working-directory: ./conditional_ui_split_student_directory
         run: |
           flutter pub get
           flutter build web --release
@@ -29,9 +30,9 @@ jobs:
           username: ${{ secrets.LIGHTSAIL_USER }}
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           port: ${{ secrets.LIGHTSAIL_PORT }}
-          source: "build/web/*"
+          source: "conditional_ui_split_student_directory/build/web/*"
           target: "/var/www/flutter_app"
-          strip_components: 2
+          strip_components: 3
 
       - name: Execute Remote SSH Commands
         uses: appleboy/ssh-action@v1.0.3
