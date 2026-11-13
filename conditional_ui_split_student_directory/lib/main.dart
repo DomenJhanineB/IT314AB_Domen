@@ -4,7 +4,7 @@ import 'add_student.dart';
 
 List<Student> students = [
   Student(
-    name: 'Baran Zac',
+    name: 'KKK',
     studentId: '2024-001',
     course: 'BSIT',
     yearLevel: '3rd Year',
