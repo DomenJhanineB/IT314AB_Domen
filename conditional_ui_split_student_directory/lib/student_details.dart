@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'student_storage.dart';
 
 class Student {
   String name;
@@ -28,8 +29,13 @@ class Student {
 
 class StudentDetailsScreen extends StatefulWidget {
   final Student student;
+  final List<Student> allStudents;
 
-  const StudentDetailsScreen({super.key, required this.student});
+  const StudentDetailsScreen({
+    super.key,
+    required this.student,
+    required this.allStudents,
+  });
 
   @override
   State<StudentDetailsScreen> createState() {
@@ -73,8 +79,7 @@ class _StudentDetailsScreenState extends State<StudentDetailsScreen> {
 
     showDialog(
       context: context,
-
-      builder: (context) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: const Text('Edit Student'),
 
@@ -96,28 +101,30 @@ class _StudentDetailsScreenState extends State<StudentDetailsScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(dialogContext);
               },
-
               child: const Text('Cancel'),
             ),
 
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 setState(() {
-                  widget.student.name = name.text;
-                  widget.student.studentId = studentId.text;
-                  widget.student.course = course.text;
-                  widget.student.yearLevel = yearLevel.text;
-                  widget.student.section = section.text;
-                  widget.student.email = email.text;
-                  widget.student.contactNumber = contact.text;
-                  widget.student.address = address.text;
+                  widget.student.name = name.text.trim();
+                  widget.student.studentId = studentId.text.trim();
+                  widget.student.course = course.text.trim();
+                  widget.student.yearLevel = yearLevel.text.trim();
+                  widget.student.section = section.text.trim();
+                  widget.student.email = email.text.trim();
+                  widget.student.contactNumber = contact.text.trim();
+                  widget.student.address = address.text.trim();
                 });
 
-                Navigator.pop(context);
-              },
+                await StudentStorage.saveStudents(widget.allStudents);
 
+                if (!dialogContext.mounted) return;
+
+                Navigator.pop(dialogContext);
+              },
               child: const Text('Save'),
             ),
           ],
@@ -142,7 +149,6 @@ class _StudentDetailsScreenState extends State<StudentDetailsScreen> {
 
       appBar: AppBar(
         backgroundColor: const Color(0xFF2D68C4),
-
         iconTheme: const IconThemeData(color: Colors.white),
 
         title: const Text(
@@ -156,7 +162,6 @@ class _StudentDetailsScreenState extends State<StudentDetailsScreen> {
           children: [
             const SizedBox(height: 20),
 
-            // Student picture
             const CircleAvatar(
               radius: 52,
               backgroundColor: Color(0xFFB9DDF5),
@@ -166,16 +171,13 @@ class _StudentDetailsScreenState extends State<StudentDetailsScreen> {
 
             const SizedBox(height: 10),
 
-            // Student name
             Text(
               widget.student.name,
-
               style: const TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 8),
 
-            // Active / Inactive
             Container(
               padding: const EdgeInsets.all(8),
 
@@ -201,7 +203,6 @@ class _StudentDetailsScreenState extends State<StudentDetailsScreen> {
 
                   Text(
                     widget.student.status,
-
                     style: TextStyle(
                       color: active ? Colors.green : Colors.red,
                       fontWeight: FontWeight.bold,
@@ -213,7 +214,6 @@ class _StudentDetailsScreenState extends State<StudentDetailsScreen> {
 
             const SizedBox(height: 2),
 
-            // Edit button
             TextButton.icon(
               onPressed: editStudent,
 
@@ -221,7 +221,6 @@ class _StudentDetailsScreenState extends State<StudentDetailsScreen> {
 
               label: const Text(
                 'Edit',
-
                 style: TextStyle(
                   color: Color(0xFF2D68C4),
                   fontWeight: FontWeight.bold,
@@ -231,7 +230,6 @@ class _StudentDetailsScreenState extends State<StudentDetailsScreen> {
 
             const SizedBox(height: 20),
 
-            // Student information
             Container(
               margin: const EdgeInsets.all(8),
               padding: const EdgeInsets.all(15),
@@ -308,7 +306,6 @@ class _StudentDetailsScreenState extends State<StudentDetailsScreen> {
 
             child: Text(
               label,
-
               style: const TextStyle(color: Color(0xFF173B68)),
             ),
           ),

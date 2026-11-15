@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+
 import 'student_details.dart';
 import 'add_student.dart';
+import 'student_storage.dart';
 
 List<Student> students = [
   Student(
@@ -15,7 +17,6 @@ List<Student> students = [
     status: 'Active',
     enrollmentStatus: 'Enrolled',
   ),
-
   Student(
     name: 'Boragay Vanneza Jane',
     studentId: '2024-002',
@@ -28,7 +29,6 @@ List<Student> students = [
     status: 'Active',
     enrollmentStatus: 'Enrolled',
   ),
-
   Student(
     name: 'Dela Cruz Irish',
     studentId: '2024-003',
@@ -41,7 +41,6 @@ List<Student> students = [
     status: 'Active',
     enrollmentStatus: 'Enrolled',
   ),
-
   Student(
     name: 'Domen Jhanine',
     studentId: '2024-004',
@@ -54,7 +53,6 @@ List<Student> students = [
     status: 'Active',
     enrollmentStatus: 'Enrolled',
   ),
-
   Student(
     name: 'Domen Renei Mae',
     studentId: '2024-005',
@@ -67,7 +65,6 @@ List<Student> students = [
     status: 'Active',
     enrollmentStatus: 'Enrolled',
   ),
-
   Student(
     name: 'Gubalane Maria Grace',
     studentId: '2024-006',
@@ -80,7 +77,6 @@ List<Student> students = [
     status: 'Active',
     enrollmentStatus: 'Enrolled',
   ),
-
   Student(
     name: 'Pal Karol Raphael',
     studentId: '2024-007',
@@ -93,7 +89,6 @@ List<Student> students = [
     status: 'Inactive',
     enrollmentStatus: 'Not Enrolled',
   ),
-
   Student(
     name: 'Tabares Jan Liebert',
     studentId: '2024-008',
@@ -106,7 +101,6 @@ List<Student> students = [
     status: 'Inactive',
     enrollmentStatus: 'Not Enrolled',
   ),
-
   Student(
     name: 'Villanueva Caroline',
     studentId: '2024-009',
@@ -119,7 +113,6 @@ List<Student> students = [
     status: 'Inactive',
     enrollmentStatus: 'Not Enrolled',
   ),
-
   Student(
     name: 'Villanueva Junior',
     studentId: '2024-010',
@@ -145,23 +138,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-
       initialRoute: '/student-list',
-
       routes: {
         '/student-list': (context) {
           return const StudentDirectory();
         },
-
         '/student-details': (context) {
           Student student =
               ModalRoute.of(context)!.settings.arguments as Student;
 
-          return StudentDetailsScreen(student: student);
+          return StudentDetailsScreen(student: student, allStudents: students);
         },
-
         '/add-student': (context) {
-          return const AddStudentScreen();
+          return AddStudentScreen(existingStudents: students);
         },
       },
     );
@@ -180,23 +169,53 @@ class StudentDirectory extends StatefulWidget {
 class _StudentDirectoryState extends State<StudentDirectory> {
   bool isLoading = true;
 
-  String statusFilter = '';
-
   @override
   void initState() {
     super.initState();
+    loadStudentData();
+  }
 
-    Future.delayed(const Duration(seconds: 3), () {
+  Future<void> loadStudentData() async {
+    try {
+      List<Student>? savedStudents = await StudentStorage.loadStudents();
+
+      if (!mounted) return;
+
+      setState(() {
+        if (savedStudents != null) {
+          students = savedStudents;
+        }
+
+        isLoading = false;
+      });
+
+      debugPrint('STUDENT DIRECTORY LOADING COMPLETED');
+      debugPrint('Current student count: ${students.length}');
+    } catch (error) {
+      if (!mounted) return;
+
       setState(() {
         isLoading = false;
       });
-    });
+
+      debugPrint('STUDENT DIRECTORY LOADING ERROR: $error');
+    }
   }
 
-  void deleteStudent(int index) {
+  Future<void> openAddStudent() async {
+    await Navigator.pushNamed(context, '/add-student');
+
+    if (!mounted) return;
+
+    setState(() {});
+  }
+
+  Future<void> deleteStudent(int index) async {
     setState(() {
       students.removeAt(index);
     });
+
+    await StudentStorage.saveStudents(students);
   }
 
   @override
@@ -210,37 +229,22 @@ class _StudentDirectoryState extends State<StudentDirectory> {
       );
     }
 
-    List<Student> displayedStudents = students.where((student) {
-      if (statusFilter == '') {
-        return true;
-      }
-
-      return student.status == statusFilter;
-    }).toList();
-
     if (students.isEmpty) {
       return Scaffold(
         backgroundColor: const Color(0xFFEAF6FF),
-
         appBar: AppBar(
           backgroundColor: const Color(0xFF2D68C4),
-
           title: const Text(
             'Student Directory',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
-
           actions: [
             IconButton(
               icon: const Icon(Icons.add, color: Colors.white),
-
-              onPressed: () {
-                Navigator.pushNamed(context, '/add-student');
-              },
+              onPressed: openAddStudent,
             ),
           ],
         ),
-
         body: const Center(
           child: Text(
             'No Students Found',
@@ -252,122 +256,48 @@ class _StudentDirectoryState extends State<StudentDirectory> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFEAF6FF),
-
       appBar: AppBar(
         backgroundColor: const Color(0xFF2D68C4),
-
         title: const Text(
           'Student Directory',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-
         actions: [
           IconButton(
             icon: const Icon(Icons.add, color: Colors.white),
-
-            onPressed: () {
-              Navigator.pushNamed(context, '/add-student');
-            },
+            onPressed: openAddStudent,
           ),
         ],
       ),
-
       body: Column(
         children: [
-          const SizedBox(height: 10),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    statusFilter = '';
-                  });
-                },
-
-                child: const Text(
-                  'All',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 10),
-
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    statusFilter = 'Active';
-                  });
-                },
-
-                child: const Text(
-                  'Active',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 10),
-
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    statusFilter = 'Inactive';
-                  });
-                },
-
-                child: const Text(
-                  'Inactive',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-
           const SizedBox(height: 15),
-
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
-
             child: Row(
               children: [
                 SizedBox(
                   width: 40,
-
                   child: Text(
                     'No.',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-
                 Expanded(
                   child: Text(
                     'Student Names',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-
                 SizedBox(
                   width: 80,
-
                   child: Text(
                     'Status',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-
                 SizedBox(
                   width: 70,
-
                   child: Text(
                     'Action',
                     style: TextStyle(fontWeight: FontWeight.bold),
@@ -376,19 +306,14 @@ class _StudentDirectoryState extends State<StudentDirectory> {
               ],
             ),
           ),
-
           const SizedBox(height: 5),
-
           Expanded(
             child: ListView.builder(
-              itemCount: displayedStudents.length,
-
+              itemCount: students.length,
               itemBuilder: (context, index) {
-                Student student = displayedStudents[index];
+                Student student = students[index];
 
-                int originalIndex = students.indexOf(student);
-
-                return studentRow(student, originalIndex, index + 1);
+                return studentRow(student, index, index + 1);
               },
             ),
           ),
@@ -402,11 +327,9 @@ class _StudentDirectoryState extends State<StudentDirectory> {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-
       child: Row(
         children: [
           SizedBox(width: 40, child: Text('$number')),
-
           Expanded(
             child: GestureDetector(
               onTap: () {
@@ -416,10 +339,8 @@ class _StudentDirectoryState extends State<StudentDirectory> {
                   arguments: student,
                 );
               },
-
               child: Text(
                 student.name,
-
                 style: const TextStyle(
                   color: Colors.black,
                   decoration: TextDecoration.underline,
@@ -427,30 +348,23 @@ class _StudentDirectoryState extends State<StudentDirectory> {
               ),
             ),
           ),
-
           SizedBox(
             width: 80,
-
             child: Text(
               student.status,
-
               style: TextStyle(
                 color: isActive ? Colors.green : Colors.red,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
-
           SizedBox(
             width: 70,
-
             child: Row(
               children: [
                 if (isActive) const Icon(Icons.star, color: Colors.amber),
-
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
-
                   onPressed: () {
                     deleteStudent(originalIndex);
                   },
