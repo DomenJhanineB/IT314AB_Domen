@@ -2,12 +2,11 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'student_details.dart';
+import 'models/student.dart';
 
 class StudentStorage {
   static const String storageKey = 'saved_students';
 
-  // Save all student records locally.
   static Future<void> saveStudents(List<Student> students) async {
     final preferences = await SharedPreferences.getInstance();
 
@@ -31,13 +30,11 @@ class StudentStorage {
     await preferences.setString(storageKey, encodedData);
   }
 
-  // Load student records from local storage.
   static Future<List<Student>?> loadStudents() async {
     final preferences = await SharedPreferences.getInstance();
 
     String? savedData = preferences.getString(storageKey);
 
-    // Return null if no records have been saved yet.
     if (savedData == null) {
       return null;
     }

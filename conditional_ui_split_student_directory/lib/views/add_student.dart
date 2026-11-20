@@ -1,6 +1,7 @@
+
 import 'package:flutter/material.dart';
-import 'student_details.dart';
-import 'student_storage.dart';
+import '../models/student.dart';
+import '../services/student_service.dart';
 
 class AddStudentScreen extends StatefulWidget {
   final List<Student> existingStudents;
@@ -16,21 +17,21 @@ class AddStudentScreen extends StatefulWidget {
 class _AddStudentScreenState extends State<AddStudentScreen> {
   final formKey = GlobalKey<FormState>();
 
+  final StudentService studentService = StudentService();
+
   final TextEditingController studentIdController = TextEditingController();
-
   final TextEditingController nameController = TextEditingController();
-
-  final TextEditingController courseController = TextEditingController();
-
   final TextEditingController yearLevelController = TextEditingController();
-
   final TextEditingController emailController = TextEditingController();
+
+  String selectedCourse = 'BSIT';
+
+  bool isSaving = false;
 
   @override
   void dispose() {
     studentIdController.dispose();
     nameController.dispose();
-    courseController.dispose();
     yearLevelController.dispose();
     emailController.dispose();
 
@@ -38,33 +39,63 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
   }
 
   Future<void> enrollStudent() async {
-    if (formKey.currentState!.validate()) {
-      Student newStudent = Student(
-        studentId: studentIdController.text.trim(),
-        name: nameController.text.trim(),
-        course: courseController.text.trim(),
-        yearLevel: yearLevelController.text.trim(),
-        email: emailController.text.trim(),
-        section: 'Not assigned',
-        contactNumber: 'Not provided',
-        address: 'Not provided',
-        status: 'Active',
-        enrollmentStatus: 'Enrolled',
-      );
+    if (!formKey.currentState!.validate()) {
+      return;
+    }
 
+    setState(() {
+      isSaving = true;
+    });
+
+    try {
+      final studentData = {
+        'student_number': studentIdController.text.trim(),
+        'student_name': nameController.text.trim(),
+        'course': selectedCourse,
+        'year_level': int.parse(
+          yearLevelController.text.trim()[0],
+        ),
+        'email': emailController.text.trim(),
+      };
+
+      // Send the student information to the backend.
+      final savedStudent = await studentService.addStudent(studentData);
+
+      // Convert the saved database record into a Student object.
+      Student newStudent = Student.fromJson(savedStudent);
+
+      newStudent.enrollmentStatus = 'Enrolled';
+
+      // Update the directory list after successful database saving.
       widget.existingStudents.add(newStudent);
-
-      await StudentStorage.saveStudents(widget.existingStudents);
-
-      studentIdController.clear();
-      nameController.clear();
-      courseController.clear();
-      yearLevelController.clear();
-      emailController.clear();
 
       if (!mounted) return;
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Student successfully saved to the database!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
       Navigator.pop(context, true);
+    } catch (error) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error.toString().replaceFirst('Exception: ', ''),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          isSaving = false;
+        });
+      }
     }
   }
 
@@ -77,7 +108,10 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           'Add Student',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -89,7 +123,10 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
             children: [
               const Text(
                 'Student Enrollment Form',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               const Text('Enter the student information below.'),
@@ -144,20 +181,33 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
               const SizedBox(height: 16),
               const Text('Course'),
               const SizedBox(height: 8),
-              TextFormField(
-                controller: courseController,
+              DropdownButtonFormField<String>(
+                initialValue: selectedCourse,
                 decoration: const InputDecoration(
-                  hintText: 'Enter Course',
                   border: OutlineInputBorder(),
                   filled: true,
                   fillColor: Colors.white,
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter the course';
+                items: const [
+                  DropdownMenuItem(
+                    value: 'BSIT',
+                    child: Text('BSIT'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'BSCS',
+                    child: Text('BSCS'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'BSIS',
+                    child: Text('BSIS'),
+                  ),
+                ],
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      selectedCourse = value;
+                    });
                   }
-
-                  return null;
                 },
               ),
 
@@ -221,13 +271,17 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: enrollStudent,
+                  onPressed: isSaving ? null : enrollStudent,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2D68C4),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.all(15),
                   ),
-                  child: const Text('Enroll Student'),
+                  child: isSaving
+                      ? const CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : const Text('Enroll Student'),
                 ),
               ),
             ],

@@ -1,31 +1,6 @@
 import 'package:flutter/material.dart';
-import 'student_storage.dart';
-
-class Student {
-  String name;
-  String studentId;
-  String course;
-  String yearLevel;
-  String section;
-  String email;
-  String contactNumber;
-  String address;
-  String status;
-  String enrollmentStatus;
-
-  Student({
-    required this.name,
-    required this.studentId,
-    required this.course,
-    required this.yearLevel,
-    required this.section,
-    required this.email,
-    required this.contactNumber,
-    required this.address,
-    required this.status,
-    required this.enrollmentStatus,
-  });
-}
+import '../models/student.dart';
+import '../services/student_service.dart';
 
 class StudentDetailsScreen extends StatefulWidget {
   final Student student;
@@ -44,6 +19,7 @@ class StudentDetailsScreen extends StatefulWidget {
 }
 
 class _StudentDetailsScreenState extends State<StudentDetailsScreen> {
+  final StudentService studentService = StudentService();
   void editStudent() {
     TextEditingController name = TextEditingController(
       text: widget.student.name,
@@ -108,22 +84,53 @@ class _StudentDetailsScreenState extends State<StudentDetailsScreen> {
 
             ElevatedButton(
               onPressed: () async {
-                setState(() {
-                  widget.student.name = name.text.trim();
-                  widget.student.studentId = studentId.text.trim();
-                  widget.student.course = course.text.trim();
-                  widget.student.yearLevel = yearLevel.text.trim();
-                  widget.student.section = section.text.trim();
-                  widget.student.email = email.text.trim();
-                  widget.student.contactNumber = contact.text.trim();
-                  widget.student.address = address.text.trim();
-                });
+                if (widget.student.id == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Student database ID is missing.'),
+                    ),
+                  );
+                  return;
+                }
 
-                await StudentStorage.saveStudents(widget.allStudents);
+                try {
+                  final updatedData = await studentService
+                      .updateStudent(widget.student.id!, {
+                        'student_number': studentId.text.trim(),
+                        'student_name': name.text.trim(),
+                        'course': course.text.trim(),
+                        'year_level': yearLevel.text.trim(),
+                        'email': email.text.trim(),
+                        'contact_number': contact.text.trim(),
+                      });
 
-                if (!dialogContext.mounted) return;
+                  final updatedStudent = Student.fromJson(updatedData);
 
-                Navigator.pop(dialogContext);
+                  if (!mounted || !dialogContext.mounted) return;
+
+                  setState(() {
+                    widget.student.name = updatedStudent.name;
+                    widget.student.studentId = updatedStudent.studentId;
+                    widget.student.course = updatedStudent.course;
+                    widget.student.yearLevel = updatedStudent.yearLevel;
+                    widget.student.email = updatedStudent.email;
+                    widget.student.contactNumber = updatedStudent.contactNumber;
+                  });
+
+                  Navigator.pop(dialogContext);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Student updated successfully!'),
+                    ),
+                  );
+                } catch (error) {
+                  if (!dialogContext.mounted) return;
+
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(error.toString())));
+                }
               },
               child: const Text('Save'),
             ),

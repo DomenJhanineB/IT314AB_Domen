@@ -1,131 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'student_details.dart';
-import 'add_student.dart';
-import 'student_storage.dart';
+import 'models/student.dart';
+import 'viewmodels/student_viewmodel.dart';
+import 'views/student_details.dart';
+import 'views/add_student.dart';
 
-List<Student> students = [
-  Student(
-    name: 'Baran Zac',
-    studentId: '2024-001',
-    course: 'BSIT',
-    yearLevel: '3rd Year',
-    section: 'BSIT-3A',
-    email: 'baranzac@example.com',
-    contactNumber: '09123456789',
-    address: 'Cebu City',
-    status: 'Active',
-    enrollmentStatus: 'Enrolled',
-  ),
-  Student(
-    name: 'Boragay Vanneza Jane',
-    studentId: '2024-002',
-    course: 'BSIT',
-    yearLevel: '3rd Year',
-    section: 'BSIT-3A',
-    email: 'boragay@example.com',
-    contactNumber: '09123456790',
-    address: 'Cebu City',
-    status: 'Active',
-    enrollmentStatus: 'Enrolled',
-  ),
-  Student(
-    name: 'Dela Cruz Irish',
-    studentId: '2024-003',
-    course: 'BSIT',
-    yearLevel: '3rd Year',
-    section: 'BSIT-3A',
-    email: 'delacruz@example.com',
-    contactNumber: '09123456791',
-    address: 'Cebu City',
-    status: 'Active',
-    enrollmentStatus: 'Enrolled',
-  ),
-  Student(
-    name: 'Domen Jhanine',
-    studentId: '2024-004',
-    course: 'BSIT',
-    yearLevel: '3rd Year',
-    section: 'BSIT-3A',
-    email: 'domen@example.com',
-    contactNumber: '09123456792',
-    address: 'Cebu City',
-    status: 'Active',
-    enrollmentStatus: 'Enrolled',
-  ),
-  Student(
-    name: 'Domen Renei Mae',
-    studentId: '2024-005',
-    course: 'BSIT',
-    yearLevel: '3rd Year',
-    section: 'BSIT-3A',
-    email: 'renei@example.com',
-    contactNumber: '09123456793',
-    address: 'Cebu City',
-    status: 'Active',
-    enrollmentStatus: 'Enrolled',
-  ),
-  Student(
-    name: 'Gubalane Maria Grace',
-    studentId: '2024-006',
-    course: 'BSIT',
-    yearLevel: '3rd Year',
-    section: 'BSIT-3A',
-    email: 'gubalane@example.com',
-    contactNumber: '09123456794',
-    address: 'Cebu City',
-    status: 'Active',
-    enrollmentStatus: 'Enrolled',
-  ),
-  Student(
-    name: 'Pal Karol Raphael',
-    studentId: '2024-007',
-    course: 'BSIT',
-    yearLevel: '3rd Year',
-    section: 'BSIT-3A',
-    email: 'pal@example.com',
-    contactNumber: '09123456795',
-    address: 'Cebu City',
-    status: 'Inactive',
-    enrollmentStatus: 'Not Enrolled',
-  ),
-  Student(
-    name: 'Tabares Jan Liebert',
-    studentId: '2024-008',
-    course: 'BSIT',
-    yearLevel: '3rd Year',
-    section: 'BSIT-3A',
-    email: 'tabares@example.com',
-    contactNumber: '09123456796',
-    address: 'Cebu City',
-    status: 'Inactive',
-    enrollmentStatus: 'Not Enrolled',
-  ),
-  Student(
-    name: 'Villanueva Caroline',
-    studentId: '2024-009',
-    course: 'BSIT',
-    yearLevel: '3rd Year',
-    section: 'BSIT-3A',
-    email: 'villanueva.c@example.com',
-    contactNumber: '09123456797',
-    address: 'Cebu City',
-    status: 'Inactive',
-    enrollmentStatus: 'Not Enrolled',
-  ),
-  Student(
-    name: 'Villanueva Junior',
-    studentId: '2024-010',
-    course: 'BSIT',
-    yearLevel: '3rd Year',
-    section: 'BSIT-3A',
-    email: 'villanueva.j@example.com',
-    contactNumber: '09123456798',
-    address: 'Cebu City',
-    status: 'Inactive',
-    enrollmentStatus: 'Not Enrolled',
-  ),
-];
+// This list receives student records from the Neon database.
+List<Student> students = [];
 
 void main() {
   runApp(const MyApp());
@@ -167,7 +48,10 @@ class StudentDirectory extends StatefulWidget {
 }
 
 class _StudentDirectoryState extends State<StudentDirectory> {
+  final StudentViewModel studentViewModel = StudentViewModel();
+
   bool isLoading = true;
+  String errorMessage = '';
 
   @override
   void initState() {
@@ -175,33 +59,32 @@ class _StudentDirectoryState extends State<StudentDirectory> {
     loadStudentData();
   }
 
+  // Retrieve students from the Neon database.
   Future<void> loadStudentData() async {
-    try {
-      List<Student>? savedStudents = await StudentStorage.loadStudents();
+    setState(() {
+      isLoading = true;
+      errorMessage = '';
+    });
 
-      if (!mounted) return;
+    await studentViewModel.loadStudents();
 
-      setState(() {
-        if (savedStudents != null) {
-          students = savedStudents;
-        }
+    if (!mounted) return;
 
-        isLoading = false;
-      });
+    setState(() {
+      students = studentViewModel.students;
+      errorMessage = studentViewModel.errorMessage;
+      isLoading = false;
+    });
 
-      debugPrint('STUDENT DIRECTORY LOADING COMPLETED');
-      debugPrint('Current student count: ${students.length}');
-    } catch (error) {
-      if (!mounted) return;
+    debugPrint('STUDENT DIRECTORY LOADING COMPLETED');
+    debugPrint('Current student count: ${students.length}');
 
-      setState(() {
-        isLoading = false;
-      });
-
-      debugPrint('STUDENT DIRECTORY LOADING ERROR: $error');
+    if (errorMessage.isNotEmpty) {
+      debugPrint('STUDENT DIRECTORY ERROR: $errorMessage');
     }
   }
 
+  // Open the Add Student screen.
   Future<void> openAddStudent() async {
     await Navigator.pushNamed(context, '/add-student');
 
@@ -210,12 +93,45 @@ class _StudentDirectoryState extends State<StudentDirectory> {
     setState(() {});
   }
 
+  // Delete a student from the Neon database.
   Future<void> deleteStudent(int index) async {
-    setState(() {
-      students.removeAt(index);
-    });
+    final student = students[index];
 
-    await StudentStorage.saveStudents(students);
+    // Check if the student has a database ID.
+    if (student.id == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Cannot delete student: Database ID is missing.'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      // Send the DELETE request through the ViewModel.
+      await studentViewModel.deleteStudent(student.id!);
+
+      if (!mounted) return;
+
+      // Remove the student from the screen after successful deletion.
+      setState(() {
+        students.removeAt(index);
+      });
+
+      debugPrint('Student deleted successfully from Neon.');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Student deleted successfully.')),
+      );
+    } catch (error) {
+      debugPrint('DELETE STUDENT ERROR: $error');
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Unable to delete student: $error')),
+      );
+    }
   }
 
   @override
@@ -225,6 +141,42 @@ class _StudentDirectoryState extends State<StudentDirectory> {
         backgroundColor: Color(0xFFEAF6FF),
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2D68C4)),
+        ),
+      );
+    }
+
+    if (errorMessage.isNotEmpty) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFEAF6FF),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF2D68C4),
+          title: const Text(
+            'Student Directory',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.cloud_off, size: 50, color: Colors.red),
+                const SizedBox(height: 15),
+                const Text(
+                  'Unable to Load Students',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                Text(errorMessage, textAlign: TextAlign.center),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: loadStudentData,
+                  child: const Text('Try Again'),
+                ),
+              ],
+            ),
+          ),
         ),
       );
     }
@@ -322,6 +274,7 @@ class _StudentDirectoryState extends State<StudentDirectory> {
     );
   }
 
+  // Display one student row.
   Widget studentRow(Student student, int originalIndex, int number) {
     bool isActive = student.status == 'Active';
 
